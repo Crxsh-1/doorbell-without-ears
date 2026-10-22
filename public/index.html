@@ -1,0 +1,133 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>Doorbell Without Ears</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon" aria-hidden="true">D</div>
+      <div>
+        <h1>Doorbell Without Ears</h1>
+        <p class="muted">Accessible visitor assistant</p>
+      </div>
+    </div>
+    <span class="status"><span class="status-dot"></span> Local demo</span>
+  </header>
+
+  <main id="main" class="layout">
+    <section class="welcome">
+      <p class="eyebrow">YOUR HOME, YOUR CONTROL</p>
+      <h2>See who's at your door.</h2>
+      <p>Review visitor events, prepare a response, and approve every simulated reply yourself.</p>
+      <p class="notice" role="note">
+        Demo mode: visitor events are simulated. No live Ring connection or real message delivery is configured.
+      </p>
+    </section>
+
+    <section class="section-heading" aria-labelledby="events-heading">
+      <div>
+        <h2 id="events-heading">Visitor activity</h2>
+        <p class="muted">Recent events from your local demo</p>
+      </div>
+      <button id="refresh-button" class="button secondary" type="button">Refresh</button>
+    </section>
+
+    <section class="simulator panel" aria-labelledby="simulate-heading">
+      <div>
+        <h3 id="simulate-heading">Try a visitor event</h3>
+        <p class="muted">Create a sample event to test the workflow.</p>
+      </div>
+      <form id="simulate-form" class="simulate-form">
+        <label for="event-kind">Event type</label>
+        <select id="event-kind" name="kind">
+          <option value="doorbell">Doorbell</option>
+          <option value="knock">Knock</option>
+          <option value="motion">Motion</option>
+        </select>
+        <button class="button primary" type="submit">＋ Simulate visitor</button>
+      </form>
+    </section>
+
+    <p id="status-message" class="status-message" role="status" aria-live="polite"></p>
+
+    <section id="events-list" class="events-grid" aria-label="Visitor events">
+      <div class="panel">Loading visitor events…</div>
+    </section>
+
+    <section class="section-heading preferences-heading" aria-labelledby="preferences-heading">
+      <div>
+        <h2 id="preferences-heading">Accessibility & preferences</h2>
+        <p class="muted">Adjust how information appears in this dashboard.</p>
+      </div>
+    </section>
+
+    <section class="panel preferences">
+      <div class="preference-row">
+        <div>
+          <label for="text-size">Text size</label>
+          <p class="muted">Choose a comfortable reading size.</p>
+        </div>
+        <select id="text-size">
+          <option value="normal">Normal</option>
+          <option value="large">Large</option>
+          <option value="xlarge">Extra large</option>
+        </select>
+      </div>
+      <div class="preference-row">
+        <div>
+          <label for="high-contrast">High contrast</label>
+          <p class="muted">Increase contrast between text and background.</p>
+        </div>
+        <input id="high-contrast" type="checkbox">
+      </div>
+      <div class="preference-row">
+        <div>
+          <label for="flash-alerts">Flash alerts</label>
+          <p class="muted">Enable visual alert emphasis in the dashboard.</p>
+        </div>
+        <input id="flash-alerts" type="checkbox">
+      </div>
+      <div class="preference-row">
+        <div>
+          <label for="delivery-instruction">Delivery instruction</label>
+          <p class="muted">Your saved instruction for deliveries.</p>
+        </div>
+        <input id="delivery-instruction" type="text" maxlength="300">
+      </div>
+      <div class="preference-row">
+        <div>
+          <label for="unknown-instruction">Unknown visitor instruction</label>
+          <p class="muted">Your preferred response for unknown visitors.</p>
+        </div>
+        <input id="unknown-instruction" type="text" maxlength="300">
+      </div>
+      <div class="preference-actions">
+        <button id="save-preferences" class="button primary" type="button">Save preferences</button>
+      </div>
+    </section>
+
+    <section class="section-heading preferences-heading" aria-labelledby="history-heading">
+      <div>
+        <h2 id="history-heading">Action history</h2>
+        <p class="muted">Review recorded demo actions.</p>
+      </div>
+      <button id="history-refresh" class="button secondary" type="button">Refresh history</button>
+    </section>
+    <section id="history-list" class="panel history-list" aria-label="Action history">
+      Loading action history…
+    </section>
+  </main>
+
+  <footer>
+    <p>Doorbell Without Ears · Local prototype · You stay in control.</p>
+  </footer>
+</body>
+</html>
