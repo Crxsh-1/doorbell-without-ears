@@ -125,7 +125,7 @@ function createMcpServer(): McpServer {
     },
     async ({ eventId }) => {
       try {
-        const reply = approval.propose(eventId);
+        const reply = await approval.propose(eventId);
         return {
           content: [{
             type: "text",

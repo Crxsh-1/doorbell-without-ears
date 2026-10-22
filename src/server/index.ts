@@ -1,4 +1,5 @@
-﻿import express from "express";
+﻿import "dotenv/config";
+import express from "express";
 import path from "node:path";
 import { apiRouter } from "./api.js";
 import { mcpRouter } from "../mcp/index.js";

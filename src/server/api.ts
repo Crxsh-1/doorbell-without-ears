@@ -170,16 +170,17 @@ apiRouter.patch("/preferences", (req, res) => {
   });
 });
 
-apiRouter.get("/history", (_req, res) => {
-  res.json(actionHistory.list());
-});
-
-apiRouter.post("/events/:id/propose", (req, res) => {
+apiRouter.post("/events/:id/propose", async (req, res) => {
   try {
-    const reply = approvalService.propose(req.params.id);
+    const reply = await approvalService.propose(req.params.id);
     res.json(reply);
-  } catch {
-    res.status(404).json({ error: "Visitor event not found" });
+  } catch (error) {
+    const message = error instanceof Error
+      ? error.message
+      : "Unable to propose reply";
+
+    const status = message.includes("not found") ? 404 : 400;
+    res.status(status).json({ error: message });
   }
 });
 

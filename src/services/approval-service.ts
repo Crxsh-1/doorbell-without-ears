@@ -1,11 +1,14 @@
-﻿import { randomUUID } from "node:crypto";
+﻿
+import { randomUUID } from "node:crypto";
 import type { ActionHistory } from "./action-history.js";
 import type { EventStore } from "./event-store.js";
 import type { PreferenceStore } from "./preference-store.js";
 import type { ProposedReply, VisitorCategory } from "./types.js";
+import { ReplyGenerator } from "./reply-generator.js";
 
 export class ApprovalService {
   private replies = new Map<string, ProposedReply>();
+  private generator = new ReplyGenerator();
 
   constructor(
     private events: EventStore,
@@ -13,45 +16,66 @@ export class ApprovalService {
     private history: ActionHistory
   ) {}
 
-  propose(eventId: string): ProposedReply {
+  async propose(eventId: string): Promise<ProposedReply> {
     const event = this.events.get(eventId);
     if (!event) throw new Error("Visitor event not found");
 
     const prefs = this.preferences.get();
     const category = event.inferred?.category ?? "unknown";
-    const text = category === "delivery"
-      ? prefs.deliveryInstruction
-      : prefs.unknownVisitorInstruction;
+
+    const generated = await this.generator.generate({
+      category,
+      visitorHint: event.visitorHint,
+      transcript: prefs.retainTranscripts
+        ? event.transcript?.text
+        : undefined,
+      deliveryInstruction: prefs.deliveryInstruction,
+      unknownVisitorInstruction: prefs.unknownVisitorInstruction
+    });
+
+    const latestEvent = this.events.get(eventId);
+    if (!latestEvent) throw new Error("Visitor event no longer exists");
+    if (latestEvent.status === "dismissed") {
+      throw new Error("Cannot propose a reply for a dismissed event");
+    }
 
     const reply: ProposedReply = {
       id: randomUUID(),
       eventId,
-      text,
-      basis: [
-        `Category used: ${category}`,
-        category === "delivery" ? "Saved delivery preference" : "Saved unknown-visitor preference"
-      ],
+      text: generated.text,
+      basis: generated.basis,
       requiresConfirmation: true,
-      generatedBy: "template"
+      generatedBy: generated.generatedBy
     };
 
     this.replies.set(reply.id, reply);
     this.events.update(eventId, { status: "proposed" });
+
     return { ...reply, basis: [...reply.basis] };
   }
 
-  confirm(replyId: string, confirmed: boolean): { delivered: boolean; message: string } {
+  confirm(
+    replyId: string,
+    confirmed: boolean
+  ): { delivered: boolean; message: string } {
     const reply = this.replies.get(replyId);
     if (!reply) throw new Error("Proposed reply not found");
 
     if (confirmed !== true) {
-      return { delivered: false, message: "Reply not delivered: user confirmation required." };
+      return {
+        delivered: false,
+        message: "Reply not delivered: user confirmation required."
+      };
     }
 
     const event = this.events.get(reply.eventId);
     if (!event) throw new Error("Visitor event no longer exists");
-    if (event.status === "dismissed") throw new Error("Cannot reply to a dismissed event");
-    if (event.status === "confirmed") throw new Error("Reply has already been confirmed");
+    if (event.status === "dismissed") {
+      throw new Error("Cannot reply to a dismissed event");
+    }
+    if (event.status === "confirmed") {
+      throw new Error("Reply has already been confirmed");
+    }
 
     this.events.update(reply.eventId, { status: "confirmed" });
     this.history.add({
@@ -61,7 +85,10 @@ export class ApprovalService {
       userConfirmed: true
     });
 
-    return { delivered: true, message: "Simulated reply delivered after confirmation." };
+    return {
+      delivered: true,
+      message: "Simulated reply delivered after confirmation."
+    };
   }
 
   correctCategory(eventId: string, category: VisitorCategory): void {

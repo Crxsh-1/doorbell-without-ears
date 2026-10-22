@@ -210,7 +210,7 @@ The project separates its main responsibilities into:
 
 \- A production deployment would need appropriate authentication, secure configuration, persistent storage, and additional security testing.
 
-\- Amazon Bedrock integration should only be described as implemented if it has actually been configured and tested.
+\- - Reply generation runs locally using saved templates. The project does not call paid AI APIs or require AWS services.
 
 
 

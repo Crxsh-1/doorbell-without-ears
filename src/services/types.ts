@@ -1,4 +1,5 @@
-﻿export type VisitorKind = "doorbell" | "motion" | "knock";
+﻿
+export type VisitorKind = "doorbell" | "motion" | "knock";
 export type VisitorCategory = "delivery" | "neighbor" | "unknown" | "service";
 export type EventStatus = "new" | "proposed" | "confirmed" | "dismissed";
 
@@ -35,7 +36,7 @@ export type ProposedReply = {
   text: string;
   basis: string[];
   requiresConfirmation: true;
-  generatedBy: "bedrock" | "template";
+  generatedBy: "template";
 };
 
 export type ActionRecord = {
